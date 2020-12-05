@@ -5,7 +5,8 @@ A journey through the [Advent of Code](https://adventofcode.com/2020/about) take
 - [Day 2 - Password Philosophy (ruby)](./2_password_policy/README.md)
 - [Day 3 - Toboggan Trajectory (go)](./3_toboggan_trajectory/README.md)
 - [Day 4 - Passport Processing (go)](./4_passport_processing/README.md)
-- Day 5 - ???
+- [Day 5 - Binary Boarding (go)](./5_binary_boarding/README.md)
+- Day 6 - ???
 
 <pre>
        _____________,--,
