@@ -6,7 +6,11 @@ A journey through the [Advent of Code](https://adventofcode.com/2020/about) take
 - [Day 3 - Toboggan Trajectory (go)](./3_toboggan_trajectory/README.md)
 - [Day 4 - Passport Processing (go)](./4_passport_processing/README.md)
 - [Day 5 - Binary Boarding (go)](./5_binary_boarding/README.md)
-- Day 6 - ???
+- [Day 6 - Custom Customs (go)](./6_custom_customs/README.md)
+- [Day 7 - Handy Haversacks Boarding (go)](./7_handy_haversacks/README.md)
+- [Day 8 - Handhelt Halting (go)](./8_handhelt_halting/README.md)
+- [Day 9 - Encoding Error (go)](./9_encoding_error/README.md)
+- Day 10 - ???
 
 <pre>
        _____________,--,
