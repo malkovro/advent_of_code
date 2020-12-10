@@ -10,7 +10,8 @@ A journey through the [Advent of Code](https://adventofcode.com/2020/about) take
 - [Day 7 - Handy Haversacks Boarding (go)](./7_handy_haversacks/README.md)
 - [Day 8 - Handhelt Halting (go)](./8_handhelt_halting/README.md)
 - [Day 9 - Encoding Error (go)](./9_encoding_error/README.md)
-- Day 10 - ???
+- [Day 10 - Adapter Array (go)](./10_adapter_array/README.md)
+- Day 11 - ?
 
 <pre>
        _____________,--,
