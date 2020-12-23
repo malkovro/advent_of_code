@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -37,64 +38,60 @@ var moveCount = 0
 var cupNumber = 0
 var moveNumber int
 
-var pickedUpCups = make([]int, 3)
-var restCups []int
+type CupLinkedList map[int]int
 
-func move(cups []int, currentCupIndex *int) {
-	moveCount++
-	debugPrintf("-- move %v --\n", moveCount)
-	debugPrintf("cups: ")
-	if debug {
-		for i, cup := range cups {
-			if i == *currentCupIndex {
-				fmt.Printf("(%v) ", cup)
-			} else {
-				fmt.Printf("%v ", cup)
-			}
-		}
-		fmt.Println()
+func (cs CupLinkedList) OrderedCup() []int {
+	orderedCup := make([]int, cupNumber)
+	orderedCup[0] = firstCup
+	for i := 1; i < cupNumber; i++ {
+		orderedCup[i] = cs[orderedCup[i-1]]
 	}
-	currentCup := cups[*currentCupIndex]
-	pickUp(pickedUpCups, restCups, cups, *currentCupIndex)
-	debugPrintf("pick up: %v\n", pickedUpCups)
-	destination := getDestinationCup(pickedUpCups, currentCup)
-	debugPrintf("destination: %v\n", destination)
-	replaceCups(cups, restCups, destination, pickedUpCups)
-	*currentCupIndex = moveCurrentCup(cups, currentCup)
+
+	return orderedCup
+}
+
+func (cs CupLinkedList) ToString(highlighted int) string {
+	cupStrArray := make([]string, cupNumber)
+	for i, c := range cs.OrderedCup() {
+		if c == highlighted {
+			cupStrArray[i] = fmt.Sprintf("(%v)", c)
+		} else {
+			cupStrArray[i] = fmt.Sprintf("%v", c)
+		}
+	}
+	return strings.Join(cupStrArray, " ")
+}
+
+func move(cups *CupLinkedList, currentCup *int) {
+	moveCount++
+	// debugPrintf("-- move %v --\n", moveCount)
+	// debugPrintf("cups: ")
+	// debugPrintln(cups.ToString(*currentCup))
+	takes3(*cups, *currentCup)
+	// debugPrintf("pick up: %v\n", pickedUpCups)
+	destination := getDestinationCup(*currentCup, &pickedUpCups)
+	// debugPrintf("destination: %v\n", destination)
+	move3Cups(*cups, &pickedUpCups, *currentCup, destination)
+	*currentCup = (*cups)[*currentCup]
+	// debugPrintln(cups.ToString(*currentCup))
 	debugPrintln("")
 }
 
-func pickUp(pickedUpCups []int, restCups []int, cups []int, currentCupIndex int) {
-	restIndex := 0
-
-	pickUpTo := -1
-	if currentCupIndex+3 > cupNumber-1 {
-		pickUpTo = (currentCupIndex + 3) % cupNumber
-	}
-
-	for index, i := range cups {
-		if pickUpTo != -1 && index <= pickUpTo {
-			pickedUpCups[2-pickUpTo+index] = i
-			continue
-		}
-
-		if index > currentCupIndex && index < currentCupIndex+4 {
-			pickedUpCups[index-currentCupIndex-1] = i
-			continue
-		}
-		restCups[restIndex] = i
-		restIndex++
+func takes3(cups CupLinkedList, currentCup int) {
+	for i := 0; i < 3; i++ {
+		pickedUpCups[i] = cups[currentCup]
+		currentCup = pickedUpCups[i]
 	}
 }
 
-func getDestinationCup(pickedUpCups []int, currentCup int) (destination int) {
+func getDestinationCup(currentCup int, pickedUpCups *[]int) (destination int) {
 	try := currentCup - 1
 	if try == 0 {
 		try = cupNumber
 	}
 	for {
 		skip := false
-		for _, cup := range pickedUpCups {
+		for _, cup := range *pickedUpCups {
 			if cup == try {
 				if try > 1 {
 					try--
@@ -112,32 +109,14 @@ func getDestinationCup(pickedUpCups []int, currentCup int) (destination int) {
 	}
 }
 
-func replaceCups(cups []int, restCups []int, destination int, pickedUpCups []int) {
-	index := 0
-	for _, cup := range restCups {
-		cups[index] = cup
-		index++
-		if cup == destination {
-			for _, pickedUpCup := range pickedUpCups {
-				cups[index] = pickedUpCup
-				index++
-			}
-		}
-	}
+var pickedUpCups = make([]int, 3)
+
+func move3Cups(cups CupLinkedList, pickedUpCups *[]int, from int, to int) {
+	cups[from] = cups[(*pickedUpCups)[2]]
+	cups[to], cups[(*pickedUpCups)[2]] = (*pickedUpCups)[0], cups[to]
 }
 
-func moveCurrentCup(cups []int, currentCup int) int {
-	takeNext := false
-	for i, cup := range cups {
-		if takeNext {
-			return i
-		}
-		if cup == currentCup {
-			takeNext = true
-		}
-	}
-	return 0
-}
+var firstCup int
 
 func main() {
 	defer timeTrack(time.Now(), "Solving Time")
@@ -153,29 +132,35 @@ func main() {
 	dat, _ := ioutil.ReadFile(*inputFile)
 	inputLine := string(dat)
 
-	currentCupIndex := 0
-	cups := make([]int, cupNumber)
-	for i, cup := range inputLine {
-		var err error
-		cups[i], err = strconv.Atoi(string(cup))
+	cupLList := make(CupLinkedList)
+
+	var lastCup int
+	for i, cupStr := range inputLine {
+		cup, err := strconv.Atoi(string(cupStr))
 		check(err)
+		if i != 0 {
+			cupLList[lastCup] = cup
+		} else {
+			firstCup = cup
+		}
+		lastCup = cup
 	}
 
-	for i := 9; i < cupNumber; i++ {
-		cups[i] = i + 1
-	}
-
-	pickedUpCups = make([]int, 3)
-	restCups = make([]int, cupNumber-3)
-
-	for i := 0; i < moveNumber; i++ {
-		move(cups, &currentCupIndex)
-	}
-
-	for i, cup := range cups {
-		if cup == 1 {
-			fmt.Printf("Cups after one multiplied: %v \n", cups[(i+1)%len(cups)]*cups[(i+2)%len(cups)])
+	if *v2 {
+		for i := 10; i < cupNumber+1; i++ {
+			cupLList[lastCup] = i
+			lastCup = i
 		}
 	}
-	// fmt.Println("Cups", cups)
+
+	cupLList[lastCup] = firstCup
+	currentCup := firstCup
+
+	for i := 0; i < moveNumber; i++ {
+		move(&cupLList, &currentCup)
+	}
+
+	if *v2 {
+		fmt.Printf("Cups after one multiplied: %v \n", cupLList[1]*cupLList[cupLList[1]])
+	}
 }
