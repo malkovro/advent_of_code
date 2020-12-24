@@ -11,7 +11,21 @@ A journey through the [Advent of Code](https://adventofcode.com/2020/about) take
 - [Day 8 - Handhelt Halting (go)](./8_handhelt_halting/README.md)
 - [Day 9 - Encoding Error (go)](./9_encoding_error/README.md)
 - [Day 10 - Adapter Array (go)](./10_adapter_array/README.md)
-- Day 11 - ?
+- [Day 11 - Seating System (go)](./11_seating_system/README.md)
+- [Day 12 - Rain Risk (go)](./12_rain_risk/README.md)
+- [Day 13 - Shuttle Search (go)](./13_shuttle_search/README.md)
+- [Day 14 - Docking Data (go)](./14_docking_data/README.md)
+- [Day 15 - Rambunctious Recitation (go)](./15_rambunctious_recitation/README.md)
+- [Day 16 - Ticket Translation (go)](./16_ticket_translation/README.md)
+- [Day 17 - Conway Cube (go)](./17_conway_cube/README.md)
+- [Day 18 - Operation Order (go)](./18_operation_order/README.md)
+- [Day 19 - Monster Message (go)](./19_monster_message/README.md)
+- [Day 20 - Jurassic Jigsaw (go)](./20_jurassic_jigsaw/README.md)
+- [Day 21 - Allergene Assessment (go)](./21_all_assessment/README.md)
+- [Day 22 - Crab Combat (go)](./22_crab_combat/README.md)
+- [Day 23 - Crab Cups (go)](./23_crab_cups/README.md)
+- [Day 24 - Lobby Layout (go)](./24_lobby_layout/README.md)
+- [Day 25 - ??? (go)](https://en.wikipedia.org/wiki/Christmas)
 
 <pre>
        _____________,--,
