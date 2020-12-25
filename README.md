@@ -25,7 +25,7 @@ A journey through the [Advent of Code](https://adventofcode.com/2020/about) take
 - [Day 22 - Crab Combat (go)](./22_crab_combat/README.md)
 - [Day 23 - Crab Cups (go)](./23_crab_cups/README.md)
 - [Day 24 - Lobby Layout (go)](./24_lobby_layout/README.md)
-- [Day 25 - ??? (go)](https://en.wikipedia.org/wiki/Christmas)
+- [Day 25 - Combo Breaker (go)](./25_combo_breaker/README.md)
 
 <pre>
        _____________,--,
