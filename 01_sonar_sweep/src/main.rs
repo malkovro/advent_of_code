@@ -1,23 +1,38 @@
 use std::io::{self, BufRead};
 use std::fs::File;
 use std::path::Path;
+use  std::vec::Vec;
 
 fn main() {
     let filename = "input.txt";
 
-    let mut increasing_depth_count = 0;
-    let mut previous_depth = std::f64::INFINITY;
+    //let window_size = 1; // Part One
+    let window_size  = 3; // Part Two
+    let mut windows = Vec::new();
 
-    // File hosts must exist in current path before this produces output
+    let mut increasing_depth_count = 0;
+    let mut previous_depth_sum = std::f64::INFINITY;
+
     if let Ok(lines) = read_lines(filename) {
-        // Consumes the iterator, returns an (Optional) String
         for line in lines {
             if let Ok(depth_s) = line {
-                let depth = depth_s.parse::<f64>().unwrap();
-                if previous_depth < depth {
-                    increasing_depth_count += 1
+                if windows.len() < window_size {
+                    windows.push(Vec::new());
                 }
-                previous_depth = depth
+                let depth = depth_s.parse::<f64>().unwrap();
+                for i in 0..windows.len() {
+                    windows[i].push(depth);
+                    
+                    if windows[i].len() == window_size {
+                        let window_sum : f64 = windows[i].iter().sum();
+    
+                        windows[i] = Vec::new();
+                        if previous_depth_sum < window_sum {
+                            increasing_depth_count += 1
+                        }
+                        previous_depth_sum = window_sum
+                    }
+                }
             }
         }
     }
