@@ -1,5 +1,5 @@
 [package]
-name = "giant-squid"
+name = "giantsquid"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,3 +7,10 @@ edition = "2021"
 
 [dependencies]
 regex = "1"
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "basic_perf"
+harness = false
