@@ -7,6 +7,7 @@ A journey through the [Advent of Code](https://adventofcode.com/2021/about) take
 - [Day 4 - Giant Squid (Rust)](./04_giant_squid/README.md)
 - [Day 5 - Hydrothermal Venture (Rust)](./05_hydroventure/README.md)
 - [Day 6 - Lanternfish (Rust)](./06_lanternfish/README.md)
+- [Day 7 - Treachery Whale (Rust)](./07_treachery_whale/README.md)
 
 
 <pre>
