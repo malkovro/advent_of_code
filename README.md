@@ -10,6 +10,7 @@ A journey through the [Advent of Code](https://adventofcode.com/2021/about) take
 - [Day 7 - Treachery Whale (Rust)](./07_treachery_whale/README.md)
 - [Day 8 - Seven Segment Search(Rust)](./08_seven_segment_search/README.md)
 - [Day 9 - Smoke Basin (Rust)](./09_smoke_basin/README.md)
+- [Day 10 - Syntax Checked (Rust)](./10_syntax_checker/README.md)
 
 
 <pre>
