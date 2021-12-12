@@ -12,6 +12,7 @@ A journey through the [Advent of Code](https://adventofcode.com/2021/about) take
 - [Day 9 - Smoke Basin (Rust)](./09_smoke_basin/README.md)
 - [Day 10 - Syntax Checked (Rust)](./10_syntax_checker/README.md)
 - [Day 11 - Dumbo Octopus (Rust)](./11_dumbo_octopus/README.md)
+- [Day 12 - Passage Pathing (Rust)](./12_passage_pathing/README.md)
 
 
 <pre>
