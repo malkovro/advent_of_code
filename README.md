@@ -15,6 +15,12 @@ A journey through the [Advent of Code](https://adventofcode.com/2021/about) take
 - [Day 12 - Passage Pathing (Rust)](./12_passage_pathing/README.md)
 - [Day 13 - Transparent Origami (Rust)](./13_transparent_origami/README.md)
 - [Day 14 - Extended Polymerization (Rust)](./14_extended_polymerization/README.md)
+- [Day 15 - Chiton (Rust)](./15_chiton/README.md)
+- [Day 16 - Packet Decoder (Rust)](./16_packet_decoder/README.md)
+- [Day 17 - Trick Shot (Rust)](./17_trick_shot/README.md)
+- [Day 18 - ??]
+- [Day 19 - ??]
+- [Day 20 - ??]
 
 
 <pre>
