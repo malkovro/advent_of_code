@@ -18,7 +18,7 @@ A journey through the [Advent of Code](https://adventofcode.com/2021/about) take
 - [Day 15 - Chiton (Rust)](./15_chiton/README.md)
 - [Day 16 - Packet Decoder (Rust)](./16_packet_decoder/README.md)
 - [Day 17 - Trick Shot (Rust)](./17_trick_shot/README.md)
-- [Day 18 - ??]
+- [Day 18 - Snailfish (Rust)](./18_snailfish)
 - [Day 19 - ??]
 - [Day 20 - ??]
 
