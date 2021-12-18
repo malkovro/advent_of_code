@@ -1,201 +1,136 @@
 extern crate nom;
 
 use itertools::Itertools;
-use nom::{
-    branch::alt, bytes::complete::tag, character::complete, combinator::map, sequence::delimited,
-    sequence::separated_pair, IResult,
-};
 use std::env;
-use std::ops::Add;
 
-#[derive(Debug, Clone)]
-enum Snail {
-    Regular(u64),
-    Pair(Box<Snail>, Box<Snail>),
-}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct Node(u32, u32);
 
-impl Add for Snail {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self {
-        Self::Pair(Box::new(self), Box::new(other))
+fn flat_reduced_sum(snails: &Vec<Vec<Node>>) -> Vec<Node> {
+    let len = snails.len();
+    let mut snail_sum_flat = snails[0].clone();
+    for i in 0..(len - 1) {
+        let mut snail_to_add = snails[1 + i]
+            .clone()
+            .into_iter()
+            .map(|mut x| {
+                x.1 += 1;
+                x
+            })
+            .collect::<Vec<Node>>();
+        snail_sum_flat = snail_sum_flat
+            .clone()
+            .into_iter()
+            .map(|mut x| {
+                x.1 += 1;
+                x
+            })
+            .collect::<Vec<Node>>();
+        snail_sum_flat.append(&mut snail_to_add);
+        reduce(&mut snail_sum_flat)
     }
-}
-
-impl Snail {
-    fn reduce(self) -> Self {
-        let mut snail = self;
-        loop {
-            let (next_snail, res) = snail.explode(0);
-            snail = next_snail;
-            if res.is_some() {
-                continue;
-            };
-            let (next_snail, splat) = snail.split();
-            snail = next_snail;
-            if !splat {
-                break;
-            }
-        }
-        snail
-    }
-
-    fn split(self) -> (Self, bool) {
-        match self {
-            Self::Regular(n) if n >= 10 => (
-                Self::Pair(
-                    Box::new(Self::Regular(n / 2)),
-                    Box::new(Self::Regular((n + 1) / 2)),
-                ),
-                true,
-            ),
-            Self::Pair(l, r) => {
-                let (l_split, l_was_split) = l.split();
-                if l_was_split {
-                    (Self::Pair(Box::new(l_split), r), true)
-                } else {
-                    let (r_split, r_was_split) = r.split();
-                    (
-                        Self::Pair(Box::new(l_split), Box::new(r_split)),
-                        r_was_split,
-                    )
-                }
-            }
-            _ => (self, false),
-        }
-    }
-
-    fn explode(self, depth: usize) -> (Self, Option<(Option<u64>, Option<u64>)>) {
-        if let Self::Regular(_) = self {
-            return (self, None);
-        } else if let Self::Pair(left, right) = self {
-            if depth >= 4 {
-                match (*left, *right) {
-                    (Self::Regular(lv), Self::Regular(rv)) => {
-                        return (Self::Regular(0), Some((Some(lv), Some(rv))))
-                    }
-                    _ => panic!("How did we reached a nested levl of more than 4 😱"),
-                }
-            }
-
-            let (exploded_left, exploded_pair) = left.explode(depth + 1);
-            if let Some(pair) = exploded_pair {
-                match pair {
-                    (exploded_pair_left, Some(r)) => {
-                        return (
-                            Self::Pair(
-                                Box::new(exploded_left),
-                                Box::new(right.add_to_left_end_leaf(r)),
-                            ),
-                            Some((exploded_pair_left, None)),
-                        )
-                    }
-                    _ => return (Self::Pair(Box::new(exploded_left), right), Some(pair)),
-                }
-            }
-
-            let original_left = exploded_left; // If we are here it means that actually nothing exploded on the left, setting a new var so the naming reflects that
-            let (exploded_right, exploded_pair) = right.explode(depth + 1);
-            if let Some(pair) = exploded_pair {
-                match pair {
-                    (Some(l), exploded_pair_right) => {
-                        return (
-                            Self::Pair(
-                                Box::new(original_left.add_to_right_end_leaf(l)),
-                                Box::new(exploded_right),
-                            ),
-                            Some((None, exploded_pair_right)),
-                        )
-                    }
-                    _ => {
-                        return (
-                            Self::Pair(Box::new(original_left), Box::new(exploded_right)),
-                            Some(pair),
-                        )
-                    }
-                }
-            }
-            let original_right = exploded_right; // If we are here it means that actually nothing exploded on the right, setting a new var so the naming reflects that
-            return (
-                Self::Pair(Box::new(original_left), Box::new(original_right)),
-                None,
-            );
-        }
-        panic!("Oops! Neither Regular nor pair, something went wrong!");
-    }
-
-    fn add_to_left_end_leaf(self, v: u64) -> Self {
-        match self {
-            Self::Regular(n) => Self::Regular(n + v),
-            Self::Pair(l, r) => Self::Pair(Box::new(l.add_to_left_end_leaf(v)), r),
-        }
-    }
-
-    fn add_to_right_end_leaf(self, v: u64) -> Self {
-        match self {
-            Snail::Regular(n) => Snail::Regular(n + v),
-            Snail::Pair(l, r) => Snail::Pair(l, Box::new(r.add_to_right_end_leaf(v))),
-        }
-    }
-
-    fn magnitude(&self) -> u64 {
-        match self {
-            Self::Regular(n) => *n,
-            Self::Pair(l, r) => 3 * l.magnitude() + 2 * r.magnitude(),
-        }
-    }
-}
-
-trait ReduceSummable {
-    fn reduced_sum(self) -> Snail;
-}
-
-impl ReduceSummable for Vec<Snail> {
-    fn reduced_sum(self) -> Snail {
-        self.into_iter()
-            .reduce(|acc, snail| (acc + snail).reduce())
-            .unwrap()
-    }
+    snail_sum_flat
 }
 
 fn main() {
     let args: Vec<String> = env::args().collect();
     let filename = args[1].clone();
-    let snails = read_into_vec(&filename);
+    let flat_snails = flat_trees(&filename);
+    let snail_sum_flat = flat_reduced_sum(&flat_snails);
+    println!(
+        "Magnitude of the Sum of snails: {:?}",
+        magnitude(&snail_sum_flat)
+    );
 
-    let snail_sum = snails.clone().reduced_sum();
-
-    let best_sum_magnitude = snails
+    let best_sum_magnitude = flat_snails
         .into_iter()
         .permutations(2)
-        .map(|pairs| pairs.reduced_sum().magnitude())
+        .map(|pairs| magnitude(&flat_reduced_sum(&pairs)))
         .max()
         .unwrap();
 
-    println!("Magnitude of sum {:?}", snail_sum.magnitude());
     println!("Best Magnitude of sum {:?}", best_sum_magnitude);
 }
 
-fn read_into_vec(file_name: &str) -> Vec<Snail> {
-    std::fs::read_to_string(file_name)
+fn flat_trees(filename: &str) -> Vec<Vec<Node>> {
+    std::fs::read_to_string(filename)
         .unwrap()
         .split('\n')
         .into_iter()
         .filter(|s| !s.is_empty())
-        .map(|l| parse_snail(l).unwrap().1)
+        .map(|l| {
+            l.chars()
+                .fold((vec![], 0), |(mut nodes, depth), c| match c {
+                    '[' => (nodes, depth + 1),
+                    ']' => (nodes, depth - 1),
+                    ',' => (nodes, depth),
+                    _ => {
+                        nodes.push(Node(c.to_digit(10).unwrap(), depth));
+                        (nodes, depth)
+                    }
+                })
+                .0
+        })
         .collect()
 }
 
-fn parse_snail(snail_str: &str) -> IResult<&str, Snail> {
-    alt((
-        map(complete::u64, Snail::Regular),
-        map(
-            delimited(
-                tag("["),
-                separated_pair(parse_snail, tag(","), parse_snail),
-                tag("]"),
-            ),
-            |(left, right)| Snail::Pair(Box::new(left), Box::new(right)),
-        ),
-    ))(snail_str)
+fn magnitude(tree: &Vec<Node>) -> u32 {
+    let mut copy = tree.clone();
+    loop {
+        let deepest = copy.iter().map(|x| x.1).max().unwrap();
+        let len = copy.len();
+        for i in 0..(len - 1) {
+            if copy[i].1 == deepest && copy[i + 1].1 == deepest {
+                copy[i].1 -= 1;
+                copy[i].0 = 3 * copy[i].0 + 2 * copy[i + 1].0;
+                copy.remove(i + 1);
+                break;
+            }
+        }
+        if copy.len() == 1 {
+            return copy[0].0;
+        }
+    }
+}
+
+fn reduce(tree: &mut Vec<Node>) {
+    while explode(tree) || split(tree) {}
+}
+
+fn explode(tree: &mut Vec<Node>) -> bool {
+    let len = tree.len();
+
+    for i in 0..len {
+        if tree[i].1 > 4 {
+            let left = tree[i].0;
+            let right = tree[i + 1].0;
+            tree[i].0 = 0;
+            tree[i].1 -= 1;
+            if i > 0 {
+                tree[i - 1].0 += left;
+            }
+
+            if i < len - 2 {
+                tree[i + 2].0 += right;
+            }
+            tree.remove(i + 1);
+            return true;
+        }
+    }
+    return false;
+}
+
+fn split(tree: &mut Vec<Node>) -> bool {
+    let len = tree.len();
+    for i in 0..len {
+        if tree[i].0 >= 10 {
+            let left = tree[i].0 / 2;
+            let right = (tree[i].0 + 1) / 2;
+            tree[i].0 = left;
+            tree[i].1 += 1;
+            tree.insert(i + 1, Node(right, tree[i].1));
+            return true;
+        }
+    }
+    false
 }
